@@ -2,6 +2,7 @@ with ada.Text_IO; use Ada.Text_IO;
 with ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 with ada.strings.unbounded; use ada.strings.unbounded;
 with ada.strings.unbounded.Text_IO; use ada.strings.unbounded.Text_IO;
+with ada.characters.handling; use ada.characters.handling;
 
 procedure wordscram is
 	fileName : unbounded_string;
@@ -42,10 +43,34 @@ procedure wordscram is
 
 	end getFilename;
 
+	function scrambleWord(word: unbounded_string; length: integer) return unbounded_string is
+		newWord: unbounded_string;
+	begin
+		return newWord;
+	end scrambleWord;
+
+
+	function isWord(word: unbounded_string) return boolean is
+	begin
+		for i in 1..length(word) loop
+			if is_letter(Element(word, i)) = False then
+				return False;
+			end if;
+		end loop;
+		return True;
+	end isWord;
+
+
+	function randomInt(lowerBound: integer; upperBound: integer) return integer is
+		randomInt: integer;
+	begin
+		randomInt := 1;
+		return randomInt;
+	end randomInt;
+
 	function processText(fileName : string) return integer is
 		infp: file_type;
 		line: unbounded_string;
-		i : integer;
 		wordStart, wordLen: integer;
 	begin
 		open(infp, in_file, fileName);
@@ -55,14 +80,13 @@ procedure wordscram is
 
 			wordLen := 0;
 			wordStart := 1;
-			i := 1;
 
 			-- Loop through line in the file, splitting the line by words
 			-- This is done by keeping track of the word's start index and length
 			for i in 1..length(line) loop
 				if Element(line, i) = ' ' or Element(line, i) = '.' or Element(line, i) = ',' then
-					if wordLen > 0 then
-						put_line(unbounded_slice(line, wordStart, wordStart + wordLen - 1));
+					if wordLen > 0 and isWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1)) = True then
+						put_line(scrambleWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1), wordLen));
 					end if;
 					wordStart := i + 1;
 					wordLen := 0;
@@ -80,19 +104,6 @@ procedure wordscram is
 
 		return 1;
 	end processText;
-
-	--function scrambleWord()
-
-
-	--function isWord()
-
-
-	function randomInt(lowerBound: integer; upperBound: integer) return integer is
-		randomInt: integer;
-	begin
-		randomInt := 1;
-		return randomInt;
-	end randomInt;
 
 
 begin
