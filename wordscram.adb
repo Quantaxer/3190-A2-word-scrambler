@@ -3,6 +3,7 @@ with ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 with ada.strings.unbounded; use ada.strings.unbounded;
 with ada.strings.unbounded.Text_IO; use ada.strings.unbounded.Text_IO;
 with ada.characters.handling; use ada.characters.handling;
+with ada.numerics.discrete_random;
 
 procedure wordscram is
 	fileName : unbounded_string;
@@ -43,12 +44,29 @@ procedure wordscram is
 
 	end getFilename;
 
-	function scrambleWord(word: unbounded_string; length: integer) return unbounded_string is
-		newWord: unbounded_string;
+	function randomInt(lowerBound: integer; upperBound: integer) return integer is
+		subtype random_range is Integer range lowerBound..upperBound;
+		package rand_int is new ada.numerics.discrete_random(random_range);
+		use rand_int;
+		gen: rand_int.Generator;
+		randomInt: random_range;
 	begin
-		return newWord;
-	end scrambleWord;
+		rand_int.reset(gen);
+		randomInt := Random(gen);
+		return randomInt;
+	end randomInt;
 
+	function scrambleWord(word: unbounded_string; length: integer) return unbounded_string is
+ 		newWord: string(1..length);
+ 		usedIndices: array(1..length) of integer;
+ 		randInt: integer;
+	begin
+		for i in 2..length - 1 loop
+			randInt := randomInt(2, length - 1);
+			put(randInt);
+		end loop;
+		return word;
+	end scrambleWord;
 
 	function isWord(word: unbounded_string) return boolean is
 	begin
@@ -59,14 +77,6 @@ procedure wordscram is
 		end loop;
 		return True;
 	end isWord;
-
-
-	function randomInt(lowerBound: integer; upperBound: integer) return integer is
-		randomInt: integer;
-	begin
-		randomInt := 1;
-		return randomInt;
-	end randomInt;
 
 	function processText(fileName : string) return integer is
 		infp: file_type;
