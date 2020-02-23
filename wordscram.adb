@@ -162,7 +162,7 @@ procedure wordscram is
 begin
 	filename := getFilename;
 	isSuccessful := processText(to_string(filename));
-	if isSuccessful = 1 then
-		put_line("Successfully finished processing text");
+	if isSuccessful /= 1 then
+		put_line("An error was encountered when processing the file.");
 	end if;
 end wordscram;
