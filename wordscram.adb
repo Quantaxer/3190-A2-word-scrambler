@@ -1,4 +1,5 @@
 with ada.Text_IO; use Ada.Text_IO;
+with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 with ada.strings.unbounded; use ada.strings.unbounded;
 with ada.strings.unbounded.Text_IO; use ada.strings.unbounded.Text_IO;
 with ada.characters.handling; use ada.characters.handling;
@@ -6,7 +7,7 @@ with ada.numerics.discrete_random;
 
 procedure wordscram is
 	fileName : unbounded_string;
-	isSuccessful : integer;
+	numberOfProcessed : integer;
 
 	-- Helper function for getFilename: determines if a file exists or not
 	-- Param: fileName: The filename to check if it exists
@@ -113,9 +114,10 @@ procedure wordscram is
 	function processText(fileName : string) return integer is
 		infp: file_type;
 		line: unbounded_string;
-		wordStart, wordLen: integer;
+		wordStart, wordLen, numProcessed: integer;
 	begin
 		open(infp, in_file, fileName);
+		numProcessed := 0;
 		loop
 			-- Get the line from the file
 			exit when end_of_file(infp);
@@ -131,6 +133,7 @@ procedure wordscram is
 				if Element(line, i) = ' ' or Element(line, i) = '.' or Element(line, i) = ',' then
 					-- Only process words > 3 long and only if it is a word. Otherwise just print it out normally
 					if wordLen > 3 and isWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1)) = True then
+						numProcessed := numProcessed + 1;
 						put(scrambleWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1), wordLen));
 					else
 						put(unbounded_slice(line, wordStart, wordStart + wordLen - 1));
@@ -147,6 +150,7 @@ procedure wordscram is
 			-- This is needed because if the line doesn't end with a delimiter, it will skip that word.
 			if wordLen > 0 then
 				if wordLen > 3 and isWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1)) = True then
+					numProcessed := numProcessed + 1;
 					put(scrambleWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1), wordLen));
 				else
 					put(unbounded_slice(line, wordStart, wordStart + wordLen - 1));
@@ -155,14 +159,13 @@ procedure wordscram is
 			put_line("");
 		end loop;
 
-		return 1;
+		return numProcessed;
 	end processText;
 
 -- Main loop of the program
 begin
 	filename := getFilename;
-	isSuccessful := processText(to_string(filename));
-	if isSuccessful /= 1 then
-		put_line("An error was encountered when processing the file.");
-	end if;
+	numberOfProcessed := processText(to_string(filename));
+	put("Number of scrambled words: ");
+	put(numberOfProcessed);
 end wordscram;
