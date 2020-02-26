@@ -1,3 +1,10 @@
+-- File: wordscram.adb
+-- Name: Peter Hudel
+-- Student Number: 1012673
+-- Date: 02/28/2020
+-- Description: This program takes in a filename with plain text in it, then scrambles up any 
+--              words that are greater than 3 letters long.
+
 with ada.Text_IO; use Ada.Text_IO;
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 with ada.strings.unbounded; use ada.strings.unbounded;
@@ -19,9 +26,11 @@ procedure wordscram is
 		open(infp, in_file, to_string(fileName));
 		close(infp);
 		return True;
+
 	exception
 		when name_error =>
 			return False;
+
 	end isFileExists;
 
 
@@ -29,6 +38,7 @@ procedure wordscram is
 	-- Return: String 
 	function getFilename return unbounded_string is
 	    filename: unbounded_string;
+
 	begin
 		put("Enter filename: ");
 		get_line(filename);
@@ -39,6 +49,7 @@ procedure wordscram is
 		end loop;
 
 		return filename;
+
 	end getFilename;
 
 
@@ -53,11 +64,13 @@ procedure wordscram is
 		use rand_int;
 		gen: rand_int.Generator;
 		randomInt: random_range;
+
 	begin
 		-- Reset the generator then create the value
 		rand_int.reset(gen);
 		randomInt := Random(gen);
 		return randomInt;
+
 	end randomInt;
 
 	-- Function that scrambles a word by generating random numbers
@@ -69,16 +82,14 @@ procedure wordscram is
  		finalWord: unbounded_string;
  		usedIndices: array(1..length) of integer;
  		randInt: integer;
-	begin
-		-- Initialize a way to keep track of all used indices
-		usedIndices := (1..length => 0);
 
+	begin
+		usedIndices := (1..length => 0);
 		-- Set first and last char of word to be the same
 		newWord(1) := Element(word, 1);
 		newWord(length) := Element(word, length);
 
 		for i in 2..length - 1 loop
-			-- Calculate random number to determine the index of the old word. If it's already been used recalculate it
 			randInt := randomInt(2, length - 1);
 			while usedIndices(randInt) = 1 loop
 				randInt := randomInt(2, length - 1);
@@ -91,35 +102,37 @@ procedure wordscram is
 
 		finalWord := to_unbounded_string(newWord);
 		return finalWord;
+
 	end scrambleWord;
 
-	-- Helper function that determines if something is a word
+	-- Helper function that determines if something is a word. Note that words 
+	-- with punctuation in them, such as ' will be treated as not a word since it's not an alpha character
 	-- Param: word: the string to determine if it is a word
 	-- Return: boolean: true if it is a word, false otherwise
 	function isWord(word: unbounded_string) return boolean is
+
 	begin
-		-- Go through each letter in the word and determine if it's a letter
-		-- Note that words with punctuation in them, such as ' will be treated as not a word since it's not alpha
 		for i in 1..length(word) loop
 			if is_letter(Element(word, i)) = False then
 				return False;
 			end if;
 		end loop;
 		return True;
+
 	end isWord;
 
 	-- Driver function that processes a file and scrambles all the words in it
 	-- Param: fileName: the filename that is loaded in for words to be scrambled
-	-- Return: int stating the program has successfully been processed
+	-- Return: int stating how many words were successfully scrambled
 	function processText(fileName : string) return integer is
 		infp: file_type;
 		line: unbounded_string;
 		wordStart, wordLen, numProcessed: integer;
+
 	begin
 		open(infp, in_file, fileName);
 		numProcessed := 0;
 		loop
-			-- Get the line from the file
 			exit when end_of_file(infp);
 			line := get_line(infp);
 
@@ -131,13 +144,13 @@ procedure wordscram is
 			for i in 1..length(line) loop
 				-- When we meet certain delimiters we know the end of a word was reached
 				if Element(line, i) = ' ' or Element(line, i) = '.' or Element(line, i) = ',' then
-					-- Only process words > 3 long and only if it is a word. Otherwise just print it out normally
 					if wordLen > 3 and isWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1)) = True then
 						numProcessed := numProcessed + 1;
 						put(scrambleWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1), wordLen));
 					else
 						put(unbounded_slice(line, wordStart, wordStart + wordLen - 1));
 					end if;
+
 					-- Reset word indices
 					wordStart := i + 1;
 					wordLen := 0;
@@ -145,22 +158,24 @@ procedure wordscram is
 				else 
 					wordLen := wordLen + 1;
 				end if;
+
 			end loop;
 
-			-- This is needed because if the line doesn't end with a delimiter, it will skip that word.
-			if wordLen > 0 then
-				if wordLen > 3 and isWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1)) = True then
-					numProcessed := numProcessed + 1;
-					put(scrambleWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1), wordLen));
-				else
-					put(unbounded_slice(line, wordStart, wordStart + wordLen - 1));
-				end if;
+			-- Process the last word in the line
+			if wordLen > 3 and isWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1)) = True then
+				numProcessed := numProcessed + 1;
+				put(scrambleWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1), wordLen));
+			else
+				put(unbounded_slice(line, wordStart, wordStart + wordLen - 1));
 			end if;
+			
 			put_line("");
 		end loop;
 
 		return numProcessed;
+
 	end processText;
+
 
 -- Main loop of the program
 begin
@@ -168,4 +183,5 @@ begin
 	numberOfProcessed := processText(to_string(filename));
 	put("Number of scrambled words: ");
 	put(numberOfProcessed);
+
 end wordscram;
