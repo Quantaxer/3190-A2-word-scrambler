@@ -5,6 +5,7 @@
 -- Description: This program takes in a filename with plain text in it, then scrambles up any 
 --              words that are greater than 3 letters long.
 
+-- with and use statements
 with ada.Text_IO; use Ada.Text_IO;
 with Ada.Integer_Text_IO; use Ada.Integer_Text_IO;
 with ada.strings.unbounded; use ada.strings.unbounded;
@@ -18,7 +19,7 @@ procedure wordscram is
 
 	-- Helper function for getFilename: determines if a file exists or not
 	-- Param: fileName: The filename to check if it exists
-	-- Return: Boolean
+	-- Return: Boolean True if it does exist
 	function isFileExists(fileName : unbounded_string) return boolean is
 		infp: file_type;
 
@@ -35,7 +36,7 @@ procedure wordscram is
 
 
 	-- Function which gets user input for a filename then returns it to the main program. Re-prompts the user if it doesn't exist
-	-- Return: String 
+	-- Return: String of the filename
 	function getFilename return unbounded_string is
 	    filename: unbounded_string;
 
@@ -58,7 +59,7 @@ procedure wordscram is
 	-- Param: upperBound: an int representing the highest number the random number can be
 	-- Return: the randomly generated number
 	function randomInt(lowerBound: integer; upperBound: integer) return integer is
-		-- Initialize random number generator package
+		-- Initialize random number generator package using the upper and lower bounds
 		subtype random_range is Integer range lowerBound..upperBound;
 		package rand_int is new ada.numerics.discrete_random(random_range);
 		use rand_int;
@@ -76,7 +77,7 @@ procedure wordscram is
 	-- Function that scrambles a word by generating random numbers
 	-- Param: word: the word to be scrambled
 	-- Param: length: The length of the word
-	-- Return: The new, scrambled word
+	-- Return: The new, scrambled word as an unbounded string
 	function scrambleWord(word: unbounded_string; length: integer) return unbounded_string is
  		newWord: string(1..length);
  		finalWord: unbounded_string;
