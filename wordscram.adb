@@ -148,7 +148,8 @@ procedure wordscram is
 					if wordLen > 3 and isWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1)) = True then
 						numProcessed := numProcessed + 1;
 						put(scrambleWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1), wordLen));
-					
+					else
+						put(unbounded_slice(line, wordStart, wordStart + wordLen - 1));
 					end if;
 
 					-- Reset word indices and print out the current character
@@ -165,7 +166,8 @@ procedure wordscram is
 			if wordLen > 3 and isWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1)) = True then
 				numProcessed := numProcessed + 1;
 				put(scrambleWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1), wordLen));
-			
+			else
+				put(unbounded_slice(line, wordStart, wordStart + wordLen - 1));
 			end if;
 
 			put_line("");
