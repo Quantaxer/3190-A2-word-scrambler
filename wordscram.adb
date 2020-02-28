@@ -161,7 +161,7 @@ procedure wordscram is
 
 			end loop;
 
-			-- Process last word. Note length of word is one less because length wasn't incremented.
+			-- Process last word
 			if wordLen > 3 and isWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1)) = True then
 				numProcessed := numProcessed + 1;
 				put(scrambleWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1), wordLen));
