@@ -144,7 +144,7 @@ procedure wordscram is
 			-- This is done by keeping track of the word's start index and length
 			for i in 1..length(line) loop
 				-- When we meet certain delimiters, or if we reach the end of the line we know the end of a word was reached
-				if i = length(line) or Element(line, i) = ' ' or Element(line, i) = '.' or Element(line, i) = ',' or Element(line, i) = '?' or Element(line, i) = '!' then
+				if Element(line, i) = ' ' or Element(line, i) = '.' or Element(line, i) = ',' or Element(line, i) = '?' or Element(line, i) = '!' then
 					if wordLen > 3 and isWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1)) = True then
 						numProcessed := numProcessed + 1;
 						put(scrambleWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1), wordLen));
@@ -161,6 +161,14 @@ procedure wordscram is
 				end if;
 
 			end loop;
+			
+			-- Process last word. Note length of word is one less because length wasn't incremented.
+			if wordLen > 2 and isWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1)) = True then
+				numProcessed := numProcessed + 1;
+				put(scrambleWord(unbounded_slice(line, wordStart, wordStart + wordLen - 1), wordLen));
+			else
+				put(unbounded_slice(line, wordStart, wordStart + wordLen - 1));
+			end if;
 
 			put_line("");
 		end loop;
